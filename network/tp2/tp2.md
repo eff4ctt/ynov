@@ -42,7 +42,7 @@ PING 192.168.56.104 (192.168.56.104) 56(84) bytes of data.
 
 🌞 Capture de ping
 
-*Fichier disponible sur mon git*
+La capture -> `ping.pcapng`
 
 ## II. Utilisation des ports
 
@@ -74,13 +74,13 @@ oui c'est super (client)
 🌞 Utilisez une commande qui permet de voir la connexion en cours
 
 ```
->  sudo ss -lnpt
+> sudo ss -lnpt
 LISTEN    0         1                  0.0.0.0:6969             0.0.0.0:*        users:(("nc",pid=18721,fd=3))
 ```
 
 🌞 Faites une capture Wireshark complète d'un échange
 
-*Fichier disponible sur mon git*
+La capture -> `netcat1.pcapng`
 
 🌞 Inversez les rôles
 
@@ -92,12 +92,12 @@ LISTEN    0         1                  0.0.0.0:2323             0.0.0.0:*       
 ```
 netcat2 : 
 
-*Fichier dispo sur mon github*
+La capture -> `netcat2.pcapng`
 
 
-III. Analyse de vos applications usuelles
+## III. Analyse de vos applications usuelles
 
-1. Serveur web
+### 1. Serveur web
 
 ```
 > nc repubblica.it 80
@@ -122,7 +122,7 @@ X-Amz-Cf-Id: T71jTQEb04KNpp0je2jTIlPRsAUwUTHI12d3C4s7fUPSU4c1BTUQIQ==
 
 🌞 Utilisez Wireshark pour capturer du trafic HTTP
 
-*Fichier disponible sur mon git*
+La capture -> `http.pcapng`
 
 🌞 Pour les 5 applications
 
@@ -133,7 +133,7 @@ Discord :
 ESTAB 0      0       192.168.1.42:52224 162.159.130.234:443  users:(("Discord",pid=30828,fd=25))
 ```
 
-*Fichier dispo sur mon git*
+La capture -> `discord.pcapng`
 
 Firefox :
 
@@ -143,12 +143,12 @@ ESTAB 0      0                                192.168.1.42:48996            140.
 ESTAB 0      0                                192.168.1.42:48602            34.107.243.93:443  users:(("firefox",pid=4012,fd=53))
 ```
 
-*Fichier dispo sur mon git*
+*La capture -> `firefox.pcapng`
 
 Steam :
 
 ```
-ss -tnp | grep -i "steam"
+> ss -tnp | grep -i "steam"
 ESTAB 0      0                                192.168.1.42:55964               23.33.233.98:443   users:(("steamwebhelper",pid=52011,fd=40))
 ESTAB 0      0                                   127.0.0.1:37997                  127.0.0.1:57230 users:(("steam",pid=51594,fd=98))         
 ESTAB 0      0                                   127.0.0.1:39222                  127.0.0.1:27060 users:(("steamwebhelper",pid=52011,fd=51))
@@ -167,24 +167,26 @@ ESTAB 0      0                                192.168.1.42:36702               2
 ESTAB 0      0                                192.168.1.42:52868               96.16.122.82:443   users:(("steamwebhelper",pid=52011,fd=39))
 ```
 
-*Fichier dispo sur mon git*
+La capture -> `steam.pcapng`
 
 Telegram Desktop :
 
 ```
-ss -tnp | grep -i "telegram"
+> ss -tnp | grep -i "telegram"
 ESTAB 0      0                                192.168.1.42:59324              149.154.167.92:443  users:(("telegram-deskto",pid=56155,fd=63))
 ```
 
-*Fichier dispo sur mon git*
+La capture -> `telegram.pcapng`
 
 Github Desktop :
 
 ```
-ss -tnp | grep -i "github"
+> ss -tnp | grep -i "github"
 ESTAB 0      0                                192.168.1.42:44886         140.82.112.26:443  users:(("github-desktop",pid=60838,fd=27))
 ESTAB 0      0                                192.168.1.42:53814         140.82.114.21:443  users:(("github-desktop",pid=60838,fd=28))
 ESTAB 0      0                                192.168.1.42:37906          140.82.121.6:443  users:(("github-desktop",pid=60838,fd=26))
 ```
 
-*Fichier dispo sur mon git*
+La capture -> `github.pcapng`
+
+## *Ecrit par eff4ctt*

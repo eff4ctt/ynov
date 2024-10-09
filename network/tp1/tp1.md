@@ -166,11 +166,11 @@ www.torproject.org.	150	IN	A	204.8.99.146
 
 🌞 J'attends dans le dépôt git de rendu un fichier ping.pcap
 
-*Fichier disponible sur mon git*
+La capture -> `ping.pcapng`
 
 🌞 Livrez un deuxième fichier : dns.pcap
 
-*Fichier disponible sur mon git*
+La capture -> `dns.pcapng`
 
 ### IV. Network scanning et adresses IP
 
@@ -233,3 +233,5 @@ PING google.fr (142.250.75.227) 56(84) bytes of data.
 64 bytes from par10s41-in-f3.1e100.net (142.250.75.227): icmp_seq=2 ttl=117 time=15.3 ms
 64 bytes from par10s41-in-f3.1e100.net (142.250.75.227): icmp_seq=3 ttl=117 time=19.0 ms
 ```
+
+## *Write by eff4ctt*
