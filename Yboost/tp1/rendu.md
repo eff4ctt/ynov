@@ -1,0 +1,1 @@
+# 1. Télécharger et créer une vm ubuntu server sans interface graphique
