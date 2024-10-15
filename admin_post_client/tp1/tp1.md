@@ -106,7 +106,7 @@ Configurer un pare-feu pour n’autoriser que les connexions sur le port du serv
 
 Utilisons les commandes suivantes pour authoriser que les connexions sur le serveur web : 
 
-- `sudo sudo ufw allow 8080/tcp`
+- `sudo ufw allow 8080/tcp`
 
 - `sudo ufw allow 22/tcp`
 

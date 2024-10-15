@@ -270,6 +270,10 @@ public (active)
 
 *Rien à rendre*
 
+## 2. 2. Comment le faire
+
+*Rien à rendre*
+
 ## 3. Rendu attendu
 
 ## A. Installation et configuration du serveur DHCP
