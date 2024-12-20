@@ -146,7 +146,7 @@ func main() {
 
 # 3 - Envoyer la clef sur discord
 
-![](./Screenshot%20from%202024-12-17%2001-17-28.png)
+![](./Screenshot%20from%202024-12-20%2017-07-55.png)
 
 # 4 - Code du tool de déchiffrement :
 
